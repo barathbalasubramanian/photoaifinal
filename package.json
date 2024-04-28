@@ -45,8 +45,5 @@
     "styled-components": "^6.1.8",
     "sweetalert2": "^11.10.3",
     "xlsx": "^0.18.5"
-  },
-  "devDependencies": {
-    "typescript": "5.4.5"
   }
 }
