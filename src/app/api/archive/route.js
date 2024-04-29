@@ -13,7 +13,7 @@ export async function GET(request) {
 
     const listParams = {
         Bucket: process.env.NEXT_PUBLIC_AWS_BUCKET_NAME,
-        Prefix: `farzin-Ashwathi_and_Harish_wedding/photographers_images/1`
+        Prefix: `farzin-Ashwathi_and_Harish_wedding/photographers_images/finaltest`
         // Prefix: `AnthillNetworks-fre/photographers_images/1`
     };
 
