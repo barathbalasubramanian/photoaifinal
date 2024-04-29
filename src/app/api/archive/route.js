@@ -19,21 +19,21 @@ export async function GET(request) {
     const fetchedImages = await s3Client.send(new ListObjectsV2Command(listParams));
     const imageKeys = fetchedImages.Contents.map(obj => obj.Key);
 
-    const zip = new JSZip();
+    // const zip = new JSZip();
 
-    for (const key of imageKeys) {
-        const getObjectParams = {
-            Bucket: process.env.NEXT_PUBLIC_AWS_BUCKET_NAME,
-            Key: key
-        };
-        const { Body } = await s3Client.send(new GetObjectCommand(getObjectParams));
-        const imageBuffer = await streamToBuffer(Body);
-        zip.file(key, imageBuffer);
-    }
+    // for (const key of imageKeys) {
+    //     const getObjectParams = {
+    //         Bucket: process.env.NEXT_PUBLIC_AWS_BUCKET_NAME,
+    //         Key: key
+    //     };
+    //     const { Body } = await s3Client.send(new GetObjectCommand(getObjectParams));
+    //     const imageBuffer = await streamToBuffer(Body);
+    //     zip.file(key, imageBuffer);
+    // }
 
-    const archive = await zip.generateAsync({ type: "blob" });
+    // const archive = await zip.generateAsync({ type: "blob" });
 
-    return new Response(archive, {
+    return new Response("archive", {
         status: 200,
         headers: {
             'Content-Type': 'application/zip'
@@ -41,14 +41,14 @@ export async function GET(request) {
     });
 }
 
-async function streamToBuffer(stream) {
-    const chunks = [];
-    return new Promise((resolve, reject) => {
-        stream.on('data', (chunk) => chunks.push(chunk));
-        stream.on('error', reject);
-        stream.on('end', () => resolve(Buffer.concat(chunks)));
-    });
-}
+// async function streamToBuffer(stream) {
+//     const chunks = [];
+//     return new Promise((resolve, reject) => {
+//         stream.on('data', (chunk) => chunks.push(chunk));
+//         stream.on('error', reject);
+//         stream.on('end', () => resolve(Buffer.concat(chunks)));
+//     });
+// }
 
 
 
