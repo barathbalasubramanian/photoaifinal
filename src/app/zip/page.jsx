@@ -25,9 +25,6 @@ const DownloadImages = async () => {
 
   return (
     <div>
-        {/* <a href={`/api/archive?images=${encodeURIComponent(JSON.stringify(images))}`} target="_blank" className="inline-block rounded py-2.5 px-6 text-sm text-white font-bold uppercasetext-white bg-slate-600 hover:bg-slate-500 dark:bg-slate-500 dark:hover:bg-slate-400">
-          Download
-        </a> */}
         <a href={`/api/archive`} target="_blank" className="inline-block rounded py-2.5 px-6 text-sm text-white font-bold uppercasetext-white bg-slate-600 hover:bg-slate-500 dark:bg-slate-500 dark:hover:bg-slate-400">
           Download
         </a>
