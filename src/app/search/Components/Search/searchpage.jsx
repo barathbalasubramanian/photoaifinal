@@ -307,14 +307,34 @@ export default function Search({ AllEventData, SuperAdmin }) {
   const SendSMSFunction = async () => {
     console.log("Sending...")
     LoaderStatsValue(true);
-    const response = await sendsms(month);
-    if (response) {
-      toast.success("Message Send Successfully");
-    } 
-    else {
-      toast.warning(response);
+    // const response = await sendsms(month);
+    const monthValue = month;
+    try {
+      const response = await fetch('api/sendmsg', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({monthValue})
+      });
+      if (response.ok) {
+          let data = await response.json()
+          console.log('Messages sent successfully!');
+          toast.success(`Messages sent successfully ${data.data}!`);
+      } else {
+          console.error('Failed to send messages');
+      }
+    } catch (error) {
+        console.error('Error:', error);
     }
-    console.log(response)
+
+    // if (response) {
+    //   toast.success("Message Send Successfully");
+    // } 
+    // else {
+    //   toast.warning(response);
+    // }
+    // console.log(response)
     LoaderStatsValue(false);
   };
 

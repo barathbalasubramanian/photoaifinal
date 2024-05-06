@@ -43,6 +43,7 @@ export default async function sendsms(event) {
                     }
             }
         }
+        console.log(numbers,event);
         const res = await hitAPI(numbers,event);
         return res
     } catch (error) {

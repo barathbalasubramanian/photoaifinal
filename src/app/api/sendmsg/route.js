@@ -5,26 +5,23 @@ import { cookies } from "next/headers";
 export async function POST(req, res) {
 
     noStore();
-    const UserID = cookies(); 
-    const User_Name = UserID.get('UserID').value;
-    console.log(User_Name)
 
     const data = await req.json()
-    const SendingData = data["SendingData"]
-    const ArrayOfNumbers = data["ArrayOfNumbers"]
-    const fun = "SendGreeting";
+    console.log(data)
+    const fun = "SendMessages";
     try {
         const response = await fetch('https://tupea9a965.execute-api.ap-south-1.amazonaws.com/sendwhatsappmsg/', {
             method: 'POST',
-            body: JSON.stringify({ SendingData , ArrayOfNumbers , User_Name , fun}),
+            body: JSON.stringify({ data , fun }),
             headers: {
                 'Content-Type': 'application/json'
             }
         });
-        console.log(response.body)
         if (response.ok) {
+            const data = await response.json();
+            console.log(data)
             return NextResponse.json({
-                data: "zip"
+                data: data.body
             })
         } else {
             throw new Error('Failed to send greeting messages');
