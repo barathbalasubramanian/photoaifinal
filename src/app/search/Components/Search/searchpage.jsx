@@ -1,7 +1,7 @@
 "use client"
 import Styles from "./page.module.css";
 import Link from "next/link";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, use } from "react";
 import Swal from "sweetalert2";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
@@ -67,6 +67,7 @@ export default function Search({ AllEventData, SuperAdmin }) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [folderName, setFolderName] = useState('');
   const [loadeer, loadderevalue] = useState(false);
+  const [videoupload,setvideoUpload] = useState(false);
 
   const [loc_,setloc_] = useState("");
   const router = useRouter();
@@ -74,7 +75,8 @@ export default function Search({ AllEventData, SuperAdmin }) {
   const [secretKey, setSecretKey] = useState('');
  
   const buttons = [
-    { id: "uploadFolder", label: "Upload Folder" },
+    { id: "uploadFolder", label: "Upload Images" },
+    { id: "uploadVideos", label: "Upload Videos"},
     { id: "dashboard", label: "Dashboard" },
     { id: "digitalInvite", label: "Digital Invite" },
     { id: "report", label: "Report" },
@@ -121,6 +123,9 @@ export default function Search({ AllEventData, SuperAdmin }) {
           setAllfoldersPage(true);
         }
       } 
+      else if ( id === "uploadVideos" ) {
+        setvideoUpload(true);
+      }
       else if ( id === "digitalInvite") {
         const eventData = {
           eventDate: eveDate || " ",
@@ -344,6 +349,68 @@ export default function Search({ AllEventData, SuperAdmin }) {
     setSecretKey("") ;
     setsecretDiv(false);
   };
+
+
+  const UploadVideos = async (e) => {
+    LoaderStatsValue(true)
+    e.preventDefault();
+    uploadstatusvideo(true);
+
+    const s3Client = new S3Client({
+      region: process.env.NEXT_PUBLIC_AWS_BUCKET_REGION,
+      credentials: {
+        accessKeyId: process.env.NEXT_PUBLIC_AWS_ACCESS_KEY,
+        secretAccessKey: process.env.NEXT_PUBLIC_AWS_SECRET_KEY,
+      },
+    });
+  
+    console.log(upload.length)
+    for (let i = 0; i < upload.length; i++) {
+      let retries = 0;
+      let success = false;
+      while (!success && retries < 3) {
+        try {
+          const uniqueFileName = new Date()
+            .toISOString()
+            .replace(/[-:.]/g, "")
+            .replace("T", "_");
+          
+          const uploadCommand = new PutObjectCommand({
+            Bucket: process.env.NEXT_PUBLIC_AWS_BUCKET_NAME,
+            Key: `${month}/photographers_videos/${month + uniqueFileName}.mp4`,
+            Body: upload[i],
+            ACL: "public-read",
+          });
+  
+          const response = await s3Client.send(uploadCommand);
+          console.log(`Upload successful! ${response.key}`);
+          const per = ((i + 1) / upload.length) * 100;
+          totaluploadedvalue(i + 1);
+          percentagevalue(Math.ceil(per));
+          success = true;
+        } catch (error) {
+          console.error("Error occurred during upload:", error);
+          await new Promise((resolve) => setTimeout(resolve, 180000)); 
+          retries++;
+        }
+      }
+  
+      if (!success) {
+        console.error(
+          "Upload failed after retrying multiple times:",
+          upload[i].name
+        );
+      }
+    }
+    setvideoUpload(false);
+    uploadvalue(null);
+    totaluploadedvalue(0);
+    percentagevalue(0);
+    toast.success("Upload Success ...");
+    uploadstatusvideo(false);
+    LoaderStatsValue(false)
+  };
+  
   return (
     <>
 
@@ -571,6 +638,37 @@ export default function Search({ AllEventData, SuperAdmin }) {
                 </div>
               </div>
               :<></>
+            }
+
+            {
+              videoupload ? 
+              <>
+                <div className={Styles.dialogBackdrop}>
+                  <div className={Styles.maincrtDiv}>
+                    <div className={Styles.FilesInputBox}>
+                      <div>
+                        <form onSubmit={UploadVideos} ref={form} encType="multipart/form-data">
+                          <div>
+                            <div>Select Videos to Upload</div>
+                            <div onClick={() => { setvideoUpload(false) }}>&#x2716;</div>
+                          </div>
+                          <input type="file" name="Video_Files" accept=".mp4" multiple required onChange={(e) => { uploadvalue(e.target.files) }} />
+                          <button type="submit" disabled={uploadstatus}>{uploadstatus ? "Please wait ..." : "Upload"}</button>
+                          {uploadstatus ? <>
+                            <div className={Styles.UploadPercentage}>
+                              <div className={Styles.UploadPercentagetext}>{percentage}% Uploaded ...</div>
+                              <div>
+                                <div className={Styles.lineclass}><Line percent={percentage} strokeWidth={3} strokeColor="#725aff" trailColor="#fbfcfd67" /></div>
+                                <div className={Styles.UploadPercentagetext}>{`${tottaluploaded} /  ${upload.length}`}</div>
+                              </div>
+                            </div>
+                          </> : <></>}
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </> : <></>
             }
             {
               secretDiv ?
