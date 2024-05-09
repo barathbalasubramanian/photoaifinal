@@ -2,11 +2,20 @@
 import React, { useEffect, useRef, useState } from "react";
 import Webcam from "react-webcam";
 import Styles from "./page.module.css"
-    const videoConstraints = {
-        width: 4000,
-        height: 4000,
-        facingMode: "user"
+    // const videoConstraints = {
+    //     width: 4000,
+    //     height: 4000,
+    //     facingMode: "user"
+    // };
+    const constraints = {
+      audio: false,
+      video: { 
+        facingMode: "user",
+        width: { ideal: 640 }, 
+        height: { ideal: 480 }
+      },
     };
+
     const TakeSelfi = ({setSelfie,captureselfivalue}) => {
 
         const videoRef = useRef(null);
