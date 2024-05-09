@@ -21,11 +21,11 @@ import Styles from "./page.module.css"
               audio: false,
               video: { 
                 facingMode: "user",
-                width: { ideal: 4096 },
-                height: { ideal: 2160 }
+                width: { ideal: 640 }, 
+                height: { ideal: 480 }
               },
             };
-        
+            
             navigator.mediaDevices
               .getUserMedia(constraints)
               .then((stream) => {
