@@ -21,11 +21,11 @@ import Styles from "./page.module.css"
               audio: false,
               video: { 
                 facingMode: "user",
-                width: { ideal: 640 }, 
-                height: { ideal: 480 }
+                width: { ideal: 4096 },
+                height: { ideal: 2160 }
               },
             };
-            
+        
             navigator.mediaDevices
               .getUserMedia(constraints)
               .then((stream) => {
@@ -93,7 +93,7 @@ import Styles from "./page.module.css"
                         <div className={Styles.mChED}>
                             <div>
                                 {/* <Webcam audio={false} ref={webcamRef} screenshotFormat="image/jpeg" screenshotQuality={1} videoConstraints={videoConstraints}/> */}
-                                <video ref={videoRef} autoPlay style={{
+                                <video ref={videoRef} autoPlay controls allowsInlineMediaPlayback="true" style={{
                                     height:"300px",width:"300px",objectFit:"cover",borderRadius:"30%",transform: "scaleX(-1)"
                                 }}/>
                                 <canvas ref={canvasRef} style={{ display: "none" }}/>
