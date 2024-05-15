@@ -2,11 +2,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import Webcam from "react-webcam";
 import Styles from "./page.module.css"
-    const videoConstraints = {
-        width: 4000,
-        height: 4000,
-        facingMode: "user"
-    };
+    // const videoConstraints = {
+    //     width: 4000,
+    //     height: 4000,
+    //     facingMode: "user"
+    // };
     // const constraints = {
     //   audio: false,
     //   video: { 
@@ -102,9 +102,10 @@ import Styles from "./page.module.css"
                         <div className={Styles.mChED}>
                             <div>
                                 {/* <Webcam audio={false} ref={webcamRef} screenshotFormat="image/jpeg" screenshotQuality={1} videoConstraints={videoConstraints}/> */}
-                                <video ref={videoRef} autoPlay controls allowsInlineMediaPlayback="true" style={{
+                                {/* <video ref={videoRef} autoPlay controls allowsInlineMediaPlayback="true" style={{
                                     height:"300px",width:"300px",objectFit:"cover",borderRadius:"30%",transform: "scaleX(-1)"
-                                }}/>
+                                }}/> */}
+                                <video ref={videoRef} autoPlay playsInline />
                                 <canvas ref={canvasRef} style={{ display: "none" }}/>
                             </div>
                         </div>
