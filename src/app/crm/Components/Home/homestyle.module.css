@@ -41,7 +41,7 @@
   }
   .calenderbox{
     width: 9vw;
-    height: 9vw;
+    min-height: 9vw;
     height: auto;
     display: flex;
     flex-direction: column;
