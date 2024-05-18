@@ -39,17 +39,19 @@
     display: flex;
     flex-direction: column;
   }
-
   .calenderbox{
     width: 9vw;
-    /* height: 9vw; */
+    height: 9vw;
     height: auto;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     border-radius: 5px;
     background-color: #1E2742;
-    height: auto !important;
+    height: auto;
+  }
+  .boxes{
+    height: auto;
   }
   .calenderboxNone{
     width: 9vw;
