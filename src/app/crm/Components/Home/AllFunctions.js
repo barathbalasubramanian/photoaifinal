@@ -59,13 +59,16 @@ export async function GetCustomerByStartAndEndDate(StartDate,EndDate) {
         const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_KEY);
         const result = await supabase.from('CustomerName').select('*').eq('User_Name', User_Name);
         const ArrayToReturn = await Promise.all(result.data.map(async (item) => {
-            const res = await supabase.from('UserEvents').select('Full_Amount,Advance_Payment').eq('Customer_ID_UUID', item.Customer_ID).gte('EventDate', StartDate).lte('EventDate', EndDate);
+            const res = await supabase.from('UserEvents').select('Full_Amount,Advance_Payment').eq('Customer_ID_UUID', item.Customer_ID);
             let Advance_Payment = 0;
             let Full_Amount = 0;
             res.data.forEach((i) => {
                 Full_Amount = Full_Amount + i.Full_Amount;
                 i.Advance_Payment.forEach((am) => {
-                    Advance_Payment = Advance_Payment + am.Advance;
+                    if (am.Date >= StartDate && am.Date <= EndDate) {
+                        console.log(am.Date)
+                        Advance_Payment = Advance_Payment + am.Advance;
+                    }
                 });
             });
             return { ...item, Balance: Full_Amount-Advance_Payment,Full_Amount:Full_Amount };
@@ -83,13 +86,17 @@ export async function GetCustomerByStartAndEndAndNameDate(StartDate,EndDate,Name
         const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_KEY);
         const result = await supabase.from('CustomerName').select('*').eq('User_Name', User_Name).eq('Customer_Name',Name);
         const ArrayToReturn = await Promise.all(result.data.map(async (item) => {
-            const res = await supabase.from('UserEvents').select('Full_Amount,Advance_Payment').eq('Customer_ID_UUID', item.Customer_ID).gte('EventDate', StartDate).lte('EventDate', EndDate);
+            const res = await supabase.from('UserEvents').select('Full_Amount,Advance_Payment').eq('Customer_ID_UUID', item.Customer_ID);
             let Advance_Payment = 0;
             let Full_Amount = 0;
             res.data.forEach((i) => {
                 Full_Amount = Full_Amount + i.Full_Amount;
                 i.Advance_Payment.forEach((am) => {
-                    Advance_Payment = Advance_Payment + am.Advance;
+                    // Advance_Payment = Advance_Payment + am.Advance;
+                    if (am.Date >= StartDate && am.Date <= EndDate) {
+                        console.log(am.Date)
+                        Advance_Payment = Advance_Payment + am.Advance;
+                    }
                 });
             });
             return { ...item, Balance: Full_Amount-Advance_Payment,Full_Amount:Full_Amount };

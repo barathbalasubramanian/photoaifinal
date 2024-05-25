@@ -120,7 +120,7 @@ export default function HomePage({UserID}) {
                     return <div className={Styles.calenderboxNone} key={index}></div>
                 })}
                 {Array.map((item)=>{
-                    return <div className={Styles.calenderbox} style={item[1] == `${TodayDate}`?{backgroundColor:"#a240e5"}:{}}>
+                    return <div className={`${Styles.calenderbox} ${Styles.boxes}`} style={item[1] == `${TodayDate}`?{backgroundColor:"#a240e5"}:{}}>
                         <div className={Styles.calenderboxDate} style={item[1] == `${TodayDate}`?{color:"#fff"}:{}}>{item[1]}</div>
                         {AddInfom.map((it,ind)=>{
                             if(it[0] == item[1]){

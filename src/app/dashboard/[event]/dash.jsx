@@ -19,6 +19,7 @@ import { FetchExploreSelfieData } from "./eventfetchdata"
 import ConfirmDelete from "./confirm"
 import Link from "next/link"
 import { FetchUserInFo } from "@/app/crm/Components/Home/AllFunctions"
+import Skeleton from '@mui/material/Skeleton';
 export default function Dashboard({ event}){
   const SuperValue = useSelector((state)=>state.Login.Is_SuperAdmin);
     const sliderRef = useRef(null);
@@ -46,6 +47,8 @@ export default function Dashboard({ event}){
     const [userInfo,SetuserInfo] = useState({});
     const [KeyState,KeyStateValue] = useState(-1);
     const [folderSelect,setfolderSelect] = useState("");
+    const [videos, setVideos] = useState([]);
+    const [photos,setPhotos] = useState(true)
     const Toast = Swal.mixin({ toast: true, position: "top-end", showConfirmButton: false, timer: 2000, timerProgressBar: true, didOpen: (toast) => { toast.onmouseenter = Swal.stopTimer; toast.onmouseleave = Swal.resumeTimer;}});
     const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_KEY);
     const s3Client = new S3Client({
@@ -188,6 +191,12 @@ export default function Dashboard({ event}){
         UploadImages();
       }
     }, [upload]);
+    useEffect(() => {
+      if (pagetext == "All Videos") {
+        setPhotos(false);
+      }
+      else { setPhotos(true) }
+    },[pagetext])
     const OnExploreClickFun = (async()=>{
       window.scrollTo(0, 0);
       loadderevalue(true)
@@ -212,6 +221,7 @@ export default function Dashboard({ event}){
       loadderevalue(false)
     })
     const OnHomeClickFun = (async()=>{
+
       window.scrollTo(0, 0);
       loadderevalue(true)
       uservalue(false)
@@ -373,7 +383,36 @@ export default function Dashboard({ event}){
   //   }
   // }
 
-    return(
+  const QueryVideos = async() => {
+    console.log("Querying Videos...")
+    pagetextvalue("All Videos");
+    loadderevalue(true)
+    stackonevalue([]);
+    stacktwovalue([]);
+    stackthreevalue([]);
+    stackfourvalue([]);
+    setPhotos(false);
+    
+    // Querying Videos
+    const command = new ListObjectsV2Command({
+      Bucket: process.env.NEXT_PUBLIC_AWS_BUCKET_NAME,
+      Delimiter: '/',
+      Prefix: `${event}/photographers_videos/`
+      });
+      try {
+          const response = await s3Client.send(command);
+          console.log(response)
+          const videoKeys = response.Contents.map((content) => content.Key);
+          console.log(videoKeys);
+          setVideos(videoKeys);
+      } catch (error) {
+          console.error('Error listing Videos:', error);
+          throw error;
+      }
+    loadderevalue(false);
+  }
+
+  return(
         <>
         {loadeer?<Loader/>:""}
         <div className={Styles.Dashboard}>
@@ -381,6 +420,7 @@ export default function Dashboard({ event}){
                 <div className={Styles.Logo}><img src={userInfo?.Logo||''} style={{width:'100px',borderRadius:'5px'}}/></div>
                 <div className={Styles.LeftNavIcons}>
                     <div onClick={OnHomeClickFun} style={pagetext === 'All Photos'?{color:'#725AFF'}:{color:'#ffffff'}}><img src={pagetext === 'All Photos'?'/svg/SelectedPhoto.svg':'/svg/Photo.svg'}/><div>Photos</div></div>
+                    <div onClick={QueryVideos} style={pagetext === 'All Videos'?{color:'#725AFF'}:{color:'#ffffff'}}><img src={pagetext === 'All Videos'?'/svg/SelectedPhoto.svg':'/svg/Photo.svg'}/><div>Videos</div></div>
                     <div onClick={OnExploreClickFun} style={pagetext === 'Explore'?{color:'#725AFF'}:{color:'#ffffff'}}><img src={pagetext === 'Explore'?'/svg/expSelected.svg':'/svg/exploreSearch.svg'}/><div>Explore</div></div>
                     <div onClick={OnFavouriteClickFun} style={pagetext === 'Favorites'?{color:'#725AFF'}:{color:'#ffffff'}}><img src={pagetext === 'Favorites'?'/svg/FavSelected.svg':'/svg/Fav.svg'}/><div>Favorites</div></div>
                 </div>
@@ -409,28 +449,51 @@ export default function Dashboard({ event}){
                 </div>
                 <div>
       {pagetext === 'Explore'?<div className={Styles.MainContaine}><ExploreComp Data={ConstData} EpxFun={OnExploreClickProfile}/></div>:<div  className={Styles.MainContaine}><span></span></div>}
-      {screenframe === 4?<>
-        <div className={Styles.MainContainer}>
-          <div><MapData Data={stackone} ScrollBtn={scrollToPosition}/></div>
-          <div><MapData Data={stacktwo} ScrollBtn={scrollToPosition}/></div>
-          <div><MapData Data={stackthree} ScrollBtn={scrollToPosition}/></div>
-          <div><MapData Data={stackfour} ScrollBtn={scrollToPosition}/></div>
-        </div>
-      </>:<></>}
-      {screenframe === 3?<>
-        <div className={Styles.MainContainer}>
-          <div><MapData Data={stackone} ScrollBtn={scrollToPosition}/></div>
-          <div><MapData Data={stacktwo} ScrollBtn={scrollToPosition}/></div>
-          <div><MapData Data={stackthree} ScrollBtn={scrollToPosition}/></div>
-        </div>
-      </>:<></>}
-      {screenframe === 2?<>
-        <div className={Styles.MainContainer}>
-          <div><MapData Data={stackone} ScrollBtn={scrollToPosition}/></div>
-          <div><MapData Data={stacktwo} ScrollBtn={scrollToPosition}/></div>
-        </div>
-      </>:<></>}</div>
+      
+      {
+        photos ? 
+        <>
+            {screenframe === 4?<>
+            <div className={Styles.MainContainer}>
+              <div><MapData Data={stackone} ScrollBtn={scrollToPosition}/></div>
+              <div><MapData Data={stacktwo} ScrollBtn={scrollToPosition}/></div>
+              <div><MapData Data={stackthree} ScrollBtn={scrollToPosition}/></div>
+              <div><MapData Data={stackfour} ScrollBtn={scrollToPosition}/></div>
             </div>
+          </>:<></>}
+          {screenframe === 3?<>
+            <div className={Styles.MainContainer}>
+              <div><MapData Data={stackone} ScrollBtn={scrollToPosition}/></div>
+              <div><MapData Data={stacktwo} ScrollBtn={scrollToPosition}/></div>
+              <div><MapData Data={stackthree} ScrollBtn={scrollToPosition}/></div>
+            </div>
+          </>:<></>}
+          {screenframe === 2?<>
+            <div className={Styles.MainContainer}>
+              <div><MapData Data={stackone} ScrollBtn={scrollToPosition}/></div>
+              <div><MapData Data={stacktwo} ScrollBtn={scrollToPosition}/></div>
+            </div>
+          </>:<></>}
+        </> : 
+        <>
+          <div>
+          {videos.length > 0 ? (
+              <div className={Styles.videoCon}>
+                {videos.map((videoKey) => (
+                  <video key={videoKey} controls style={{maxHeight:"20em",maxWidth:"20em",objectFit:"contain"}}> 
+                    <source src={`https://${process.env.NEXT_PUBLIC_AWS_BUCKET_NAME}.s3.amazonaws.com/${videoKey}`} type="video/mp4" />
+                    Your browser does not support the video tag.
+                  </video>
+                )) }
+              </div>
+            ) : (
+              <div className={Styles.empty}>No Videos Found !</div>
+            )}
+          </div>  
+        </>
+      }
+              </div>
+          </div>
         </div>
         {Slider?<div className={Styles.OverflowScrollAnimation} ref={sliderRef}>
         {DobeMaped.map((item,index)=>{

@@ -23,16 +23,36 @@ function GreetingSendBtn({SendingData,ArrayOfNumbers}) {
     };
 
     const  handleClick = async() => {
-        const res =  await sendgreatingmessages(SendingData,ArrayOfNumbers);
-        console.log(res,"Response")
-        if (res) {
-        toast.success("Message Send Successfully")
-        console.log(res);
-        } else {
-        console.log("Error :",res)
-        toast.warning("Something Went wrong!")
-        }
-        alert('Message Sent ...')
+      // const res =  await sendgreatingmessages(SendingData,ArrayOfNumbers);
+      // console.log(JSON.stringify({ SendingData , ArrayOfNumbers  }))
+      // console.log(SendingData,ArrayOfNumbers,"Client")
+        try {
+          const response = await fetch('api/sendsms', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({SendingData,ArrayOfNumbers})
+          });
+
+          if (response.ok) {
+              console.log('Greeting messages sent successfully!');
+          } else {
+              console.error('Failed to send greeting messages');
+          }
+      } catch (error) {
+          console.error('Error:', error);
+      }
+
+      // console.log(res,"Response")
+      // if (res) {
+      // toast.success("Message Send Successfully")
+      // console.log(res);
+      // } else {
+      // console.log("Error :",res)
+      // toast.warning("Something Went wrong!")
+      // }
+      // alert('Message Sent ...')
     }
     
   return (

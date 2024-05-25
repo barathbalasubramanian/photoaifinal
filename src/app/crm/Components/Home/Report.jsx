@@ -30,6 +30,7 @@ export default function ReportLeftDrawer() {
       total = total + item.Full_Amount
       balance = balance + item.Balance
     })
+    console.log(total,balance,response);
     SetBal(balance)
     SetTot(total)
     DataSet(response);
@@ -37,7 +38,8 @@ export default function ReportLeftDrawer() {
     {response.map((it)=>{
       CusName.push(it.Customer_Name)
     })}
-    SetAllCustomerName(CusName)
+    SetAllCustomerName(CusName);
+    console.log(CusName);
   }
   function isValidDateFormat(dateString) {
     const regex = /^\d{4}-\d{2}-\d{2}$/;
@@ -59,7 +61,9 @@ export default function ReportLeftDrawer() {
     if(st.length == 10 && en.length == 10){
     if(isValidDateFormat(en)&&isValidDateFormat(st)){
       if(name === 'Over All'|| name==''){
+        console.log(st,en)
         const response = await GetCustomerByStartAndEndDate(st,en);
+        console.log(response)
         let total = 0;
         let balance = 0
         response.map((item)=>{
